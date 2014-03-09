@@ -32,15 +32,17 @@ RUN cd /tmp && \
 # Install global Gems
 RUN gem install bundler daemon_controller
 
-# Install application
-RUN cd /opt && \
-    git clone https://github.com/pto/docker-demo.git && \
-    cd docker-demo && \
-    bundle install && \
-    chmod 777 log && \
-    chown -R www-data.www-data .
+# Setup up user
+RUN addgroup --gid 5000 rails
+RUN adduser --disabled-password --gecos "" --uid 5000 --gid 5000 rails
 
-# Run the appliction inside Passenger
+# Install application
+ADD . /opt/docker-demo
+RUN cd /opt/docker-demo && \
+    bundle install && \
+    chown -R rails.rails .
+
+# Run the application inside Passenger
 EXPOSE 80
 WORKDIR /opt/docker-demo
-CMD passenger start --port 80 --environment production --max-pool-size 3
+CMD ["passenger", "start", "--port=80", "--environment=production", "--user=rails"]
