@@ -37,12 +37,14 @@ RUN addgroup --gid 5000 rails
 RUN adduser --disabled-password --gecos "" --uid 5000 --gid 5000 rails
 
 # Install application
-ADD . /opt/docker-demo
+# ADD . /opt/docker-demo
+RUN cd /opt && git clone https://github.com/pto/docker-demo.git
 RUN cd /opt/docker-demo && \
     bundle install && \
     chown -R rails.rails .
 
 # Run the application inside Passenger
+RUN cd /opt/docker-demo && git pull
 EXPOSE 80
 WORKDIR /opt/docker-demo
 CMD ["passenger", "start", "--port=80", "--environment=production", "--user=rails"]
