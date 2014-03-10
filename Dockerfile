@@ -44,7 +44,6 @@ RUN cd /opt/docker-demo && \
     chown -R rails.rails .
 
 # Run the application inside Passenger
-RUN cd /opt/docker-demo && git pull
 EXPOSE 80
 WORKDIR /opt/docker-demo
-CMD ["passenger", "start", "--port=80", "--environment=production", "--user=rails"]
+CMD cd /opt/docker-demo && git pull && passenger start --port=80 --environment=production --user=rails
